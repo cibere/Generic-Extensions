@@ -27,7 +27,6 @@ from typing import Generic, TypeVar
 from discord import Interaction, app_commands
 from discord.ext import commands
 
-
 ConverterReturn = TypeVar("ConverterReturn")
 
 __all__ = ["TimeConverter", "CodeblockConverter"]
@@ -55,7 +54,24 @@ class _BaseConverter(
 
 
 class CodeblockConverter(_BaseConverter):
-    async def handle(self, ctx_or_interaction, arg: str) -> str:
+    async def handle(
+        self, ctx_or_interaction: commands.Context | Interaction, arg: str
+    ) -> str:
+        """Removes the codeblock from the given arg.
+
+        Parameters
+        ----------
+        ctx_or_interaction : commands.Context | discord.Interaction
+            the ctx or interaction from the slash or prefix command
+        arg : str
+            the text that will be converted
+
+        Returns
+        ----------
+        str
+            your converted text
+        """
+
         if arg.startswith("`"):
             arg = arg.removeprefix("```").removesuffix("```")
             arg = arg.removeprefix("py\n")
@@ -64,9 +80,26 @@ class CodeblockConverter(_BaseConverter):
 
 
 class TimeConverter(_BaseConverter):
-    async def handle(self, ctx_or_interaction, argument: str):
+    async def handle(
+        self, ctx_or_interaction: commands.Context | Interaction, argument: str
+    ) -> float:
+        """Converts a time argument into a float of seconds.
+
+        Parameters
+        ----------
+        ctx_or_interaction : commands.Context | discord.Interaction
+            the ctx or interaction from the slash or prefix command
+        arg : str
+            the text that will be converted
+
+        Returns
+        ----------
+        float
+            your time argument in seconds
+        """
+
         matches = TIME_REGEX.findall(argument.lower())
-        time = 0
+        time = 0.0
         for v, k in matches:
             try:
                 time += TIME_DICT[k] * float(v)
